@@ -11,6 +11,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const (
@@ -19,12 +20,29 @@ const (
 	terminalHeight = 200
 )
 
+type Object struct {
+	Name   string
+	HasKey bool
+}
+
+type Room struct {
+	Name    string
+	Image   *ebiten.Image
+	Objects []Object
+}
+
 type Game struct {
-	room       *ebiten.Image
-	input      string
-	output     []string
-	lastBlink  time.Time
-	showCursor bool
+	currentRoom Room
+	input       string
+	output      []string
+	lastBlink   time.Time
+	showCursor  bool
+}
+
+func (g *Game) showObjects(room *Room) {
+	for _, obj := range room.Objects {
+		g.output = append(g.output, obj.Name)
+	}
 }
 
 func loadImage(path string) (*ebiten.Image, error) {
@@ -43,12 +61,10 @@ func loadImage(path string) (*ebiten.Image, error) {
 }
 
 func (g *Game) Init() {
-	room, err := loadImage("/home/rpohly/projects/rooms/ascii/office.png")
+	img, err := loadImage("/home/rpohly/projects/rooms/ascii/office.png")
 	if err != nil {
 		panic(err)
 	}
-
-	g.room = room
 
 	g.output = []string{
 		"System booting...",
@@ -56,6 +72,16 @@ func (g *Game) Init() {
 	}
 
 	g.lastBlink = time.Now()
+
+	g.currentRoom = Room{
+		Name:  "Office",
+		Image: img,
+		Objects: []Object{
+			{Name: "Lamp", HasKey: true},
+			{Name: "Bookshelf", HasKey: false},
+			{Name: "File Cabinet", HasKey: false},
+		},
+	}
 }
 
 func (g *Game) Update() error {
@@ -76,7 +102,7 @@ func (g *Game) Update() error {
 	}
 
 	// enter
-	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		g.handleCommand(g.input)
 		g.input = ""
 	}
@@ -93,7 +119,8 @@ func (g *Game) handleCommand(cmd string) {
 	case "help":
 		g.output = append(g.output, "commands: help, look, clear")
 	case "look":
-		g.output = append(g.output, "You are in a server room. Fans humming.")
+		g.output = append(g.output, "You are in an office.")
+		g.showObjects(&g.currentRoom)
 	case "clear":
 		g.output = []string{}
 	default:
@@ -114,11 +141,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// TOP AREA: ROOM IMAGE
 	// ----------------------------
 
-	if g.room != nil {
+	if g.currentRoom.Image != nil {
 		op := &ebiten.DrawImageOptions{}
 
 		// scale image to fit width
-		imgW, imgH := g.room.Bounds().Dx(), g.room.Bounds().Dy()
+		imgW, imgH := g.currentRoom.Image.Bounds().Dx(), g.currentRoom.Image.Bounds().Dy()
 
 		scaleX := float64(screenW) / float64(imgW)
 		scaleY := float64(screenH-terminalHeight) / float64(imgH)
@@ -137,7 +164,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 		op.GeoM.Translate(float64(offsetX), float64(offsetY))
 
-		screen.DrawImage(g.room, op)
+		screen.DrawImage(g.currentRoom.Image, op)
 	}
 
 	// ----------------------------
@@ -155,7 +182,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	)
 
 	// output log
-	y := screenH - terminalHeight + 10
+	y := screenH - terminalHeight + 20
 	for _, line := range g.output {
 		ebitenutil.DebugPrintAt(screen, line, 10, y)
 		y += 16
