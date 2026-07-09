@@ -21,15 +21,25 @@ const (
 	terminalHeight = 200
 )
 
+type Player struct {
+	Inventory []Object
+	Health    int
+}
+
 type Object struct {
 	Name   string
 	HasKey bool
+}
+
+type Exit struct {
+	IsUnlocked bool
 }
 
 type Room struct {
 	Name    string
 	Image   *ebiten.Image
 	Objects []Object
+	Exits   []Exit
 }
 
 type Game struct {
@@ -38,6 +48,7 @@ type Game struct {
 	output      []string
 	lastBlink   time.Time
 	showCursor  bool
+	player      Player
 }
 
 func (g *Game) showObjects(room *Room) {
