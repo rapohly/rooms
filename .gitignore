@@ -1,2 +1,16 @@
 dist/*
-terraform/.terraform
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Go build output
+*.wasm
+*.exe
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
