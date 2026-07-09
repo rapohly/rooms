@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"embed"
 	"image"
 	"image/color"
 	_ "image/png"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -45,14 +46,16 @@ func (g *Game) showObjects(room *Room) {
 	}
 }
 
+//go:embed assets/**
+var assets embed.FS
+
 func loadImage(path string) (*ebiten.Image, error) {
-	f, err := os.Open(path)
+	f, err := assets.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 
-	img, _, err := image.Decode(f)
+	img, _, err := image.Decode(bytes.NewReader(f))
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +64,7 @@ func loadImage(path string) (*ebiten.Image, error) {
 }
 
 func (g *Game) Init() {
-	img, err := loadImage("/home/rpohly/projects/rooms/ascii/office.png")
+	img, err := loadImage("assets/office.png")
 	if err != nil {
 		panic(err)
 	}
