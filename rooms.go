@@ -32,7 +32,9 @@ type Object struct {
 }
 
 type Exit struct {
+	Name       string
 	IsUnlocked bool
+	NextRoom   *Room
 }
 
 type Room struct {
@@ -94,6 +96,9 @@ func (g *Game) Init() {
 			{Name: "Lamp", HasKey: true},
 			{Name: "Bookshelf", HasKey: false},
 			{Name: "File Cabinet", HasKey: false},
+		},
+		Exits: []Exit{
+			{Name: "Door", IsUnlocked: false, NextRoom: nil},
 		},
 	}
 }
