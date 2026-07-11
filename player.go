@@ -1,6 +1,6 @@
 package main
 
 type Player struct {
-	Inventory []Object
+	Inventory []Item
 	Health    int
 }

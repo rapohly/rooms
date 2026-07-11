@@ -34,7 +34,7 @@ func (g *Game) Init() {
 		Name:  "Office",
 		Image: img,
 		Objects: []Object{
-			{Name: "Lamp"},
+			{Name: "Lamp", Items: []Item{{Name: "key"}}},
 			{Name: "Bookshelf"},
 			{Name: "File Cabinet"},
 		},
@@ -63,7 +63,7 @@ func (g *Game) Update() error {
 
 	// enter
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		g.handleCommand(g.input)
+		g.parseCommand(g.input)
 		g.input = ""
 	}
 
