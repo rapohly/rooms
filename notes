@@ -5,7 +5,7 @@ If you examine the exit, then:
         If key in player.Inventory, then:
                 room.exits.exit.IsUnlocked = true
                 if NextRoom is nil, then:
-                        game exits
+                        game exits (you are outside)
 
 
 Player calls exit function, which checks if door is unlocked and if NextRoom has values
