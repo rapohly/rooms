@@ -34,9 +34,9 @@ func (g *Game) Init() {
 		Name:  "Office",
 		Image: img,
 		Objects: []Object{
-			{Name: "Lamp", HasKey: true},
-			{Name: "Bookshelf", HasKey: false},
-			{Name: "File Cabinet", HasKey: false},
+			{Name: "Lamp"},
+			{Name: "Bookshelf"},
+			{Name: "File Cabinet"},
 		},
 		Exits: []Exit{
 			{Name: "Door", IsUnlocked: false, NextRoom: nil},

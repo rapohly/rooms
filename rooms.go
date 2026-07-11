@@ -4,9 +4,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type Item struct {
+	Name string
+}
+
 type Object struct {
-	Name   string
-	HasKey bool
+	Name  string
+	Items []Item
 }
 
 type Exit struct {
